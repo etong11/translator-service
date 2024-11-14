@@ -69,8 +69,8 @@ def translate_content(content: str) -> tuple[bool, str]:
   if isEnglish:
       result = (isEnglish, content)
   else:
-    #   if " " in post_lang:
-    #     return (True, INVALID_LANGUAGE)
+      if " " in post_lang:
+        return (True, INVALID_LANGUAGE)
       try:
         translation = get_translation(content)
         result = (isEnglish, translation)
