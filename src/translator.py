@@ -47,6 +47,10 @@ client = AzureOpenAI(
 #         return True, "This is an English message"
 #     return True, content
 
+GET_LANGUAGE_ERROR = "Error: Azure LLM call to get language failed."
+INVALID_LANGUAGE = "Error: Azure LLM call to get language returned an invalid language."
+TRANSLATE_ERROR = "Error: Azure LLM call to translate post failed."
+
 def get_language(post: str) -> str:
     context = "You are a translator for a Q&A platform. Your job is to take in post content and determine what language it is. Only return this language."
     response = client.chat.completions.create(
@@ -65,7 +69,6 @@ def get_language(post: str) -> str:
     res = (response.choices[0].message.content)
     return res
 
-# TODO: Implement Basic LLM integration
 def get_translation(post: str) -> str:
     context = "You are a translator for a Q&A platform. Your job is to take in non-English post content and translate it into English. You will be given an input of content to translate and will return the English translation."
     response = client.chat.completions.create(
@@ -85,13 +88,27 @@ def get_translation(post: str) -> str:
     return res
 
 def translate_content(content: str) -> tuple[bool, str]:
-  # To avoid unnecessary quering of LLM
   if content == "":
     return (True, content)
 
-  post_lang = get_language(content)
-  isEnglish = 'english' in post_lang.lower() # to account for possible regional dialects outputted
-  if (isEnglish):
-    return (isEnglish, content)
+  try:
+    post_lang = get_language(content)
+  except Exception as e:
+    return (False, GET_LANGUAGE_ERROR)
+
+  try:
+    isEnglish = 'english' in post_lang.lower()  # Accounts for possible regional dialects
+  except Exception as e:
+    return (False, INVALID_LANGUAGE)
+
+  if isEnglish:
+      result = (isEnglish, content)
   else:
-    return (isEnglish, get_translation(content))
+      if " " in post_lang:
+        return (False, INVALID_LANGUAGE)
+      try:
+        translation = get_translation(content)
+        result = (isEnglish, translation)
+      except Exception as e:
+          return (False, TRANSLATE_ERROR)
+  return result
