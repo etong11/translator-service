@@ -10,4 +10,18 @@ def test_llm_normal_response():
     pass
 
 def test_llm_gibberish_response():
-    pass
+    is_english, translated_content = translate_content("abcd1234!")
+    assert is_english == False
+    assert translated_content == "I don't understand your request"
+    is_english, translated_content = translate_content("??¿¿!!??")
+    assert is_english == False
+    assert translated_content == "I don't understand your request"
+    is_english, translated_content = translate_content("||| broken sentence.")
+    assert is_english == False
+    assert translated_content == "I don't understand your request"
+    is_english, translated_content = translate_content("テスト123 abc xyz")
+    assert is_english == False
+    assert translated_content == "I don't understand your request"
+    is_english, translated_content = translate_content(".....!!!???...")
+    assert is_english == False
+    assert translated_content == "I don't understand your request"
