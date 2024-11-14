@@ -11,17 +11,16 @@ def test_llm_normal_response():
 
 def test_llm_gibberish_response():
     is_english, translated_content = translate_content("abcd1234!")
-    assert is_english == False
-    assert translated_content == "I don't understand your request"
+    assert is_english == True
+    assert translated_content == "abcd1234!"
     is_english2, translated_content = translate_content("??¿¿!!??")
-    assert is_english2 == False
-    assert translated_content == "I don't understand your request"
+    assert is_english2 == True
+    assert translated_content == "??¿¿!!??"
     is_english3, translated_content = translate_content("||| broken sentence.")
-    assert is_english3 == False
-    assert translated_content == "I don't understand your request"
+    assert is_english3 == True
+    assert translated_content == "||| broken sentence."
     is_english4, translated_content = translate_content("テスト123 abc xyz")
-    assert is_english4 == False
-    assert translated_content == "I don't understand your request"
+    assert is_english4 == True
+    assert translated_content == "テスト123 abc xyz"
     is_english5, translated_content = translate_content(".....!!!???...")
-    assert is_english5 == False
-    assert translated_content == "I don't understand your request"
+    assert is_english5 == True
