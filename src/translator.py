@@ -5,6 +5,12 @@ if os.path.exists('.env'):
     from dotenv import load_dotenv
     load_dotenv()
 
+# Check if environment variables are set
+if not os.getenv("AZURE_OPENAI_API_KEY"):
+    raise EnvironmentError("AZURE_OPENAI_API_KEY is not set")
+if not os.getenv("AZURE_OPENAI_ENDPOINT"):
+    raise EnvironmentError("AZURE_OPENAI_ENDPOINT is not set")
+
 # Initialize the Azure OpenAI client
 client = AzureOpenAI(
     api_key=os.getenv("AZURE_OPENAI_API_KEY"),
