@@ -1,19 +1,19 @@
 from src.translator import translate_content
 from src.translator import client
 
-# def test_chinese():
-#     is_english, translated_content = translate_content("这是一条中文消息")
-#     assert is_english == False
-#     assert translated_content == "This is a message in Chinese."
+def test_chinese():
+    is_english, translated_content = translate_content("这是一条中文消息")
+    assert is_english == False
+    assert translated_content == "This is a message in Chinese."
 
-# def test_llm_normal_response():
-#     is_english_1, translated_content = translate_content("This is an English message.")
-#     assert is_english_1 == True
-#     assert translated_content == "This is an English message."
+def test_llm_normal_response():
+    is_english_1, translated_content = translate_content("This is an English message.")
+    assert is_english_1 == True
+    assert translated_content == "This is an English message."
 
-#     is_english_2, translated_content = translate_content("Esta es un mensaje en español.")
-#     assert is_english_2 == False
-#     assert translated_content == "This is a message in Spanish."
+    is_english_2, translated_content = translate_content("Esta es un mensaje en español.")
+    assert is_english_2 == False
+    assert translated_content == "This is a message in Spanish."
 
     # is_english_3, translated_content = translate_content("Ceci est un message en français.")
     # assert is_english_3 == False
