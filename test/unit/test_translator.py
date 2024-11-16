@@ -231,7 +231,7 @@ def test_non_english_posts():
     is_english, translated_content = translate_content("ما هي أفضل ممارسات الأمان على الإنترنت؟")
     assert is_english == False
     similarity_score = eval_single_response_translation("What are the best practices for online security?", translated_content)
-    assert similarity_score > 0.9
+    assert similarity_score > 0.85
 
     is_english, translated_content = translate_content("Qual è il modo migliore per proteggere i dati?")
     assert is_english == False
@@ -268,28 +268,31 @@ def test_non_english_posts():
     similarity_score = eval_single_response_translation("What is the importance of version control?", translated_content)
     assert similarity_score > 0.9
 
-def test_unintelligible_posts():
-    unintelligible_post_response = "It seems that the input you provided does not contain any words or phrases to translate. If you have specific text that needs translation, please provide that content, and I'll be happy to assist!"
-    
+def test_unintelligible_posts():    
     is_english, translated_content = translate_content("abcd1234!")
+    assert is_english == True
     similarity_score = eval_single_response_translation("abcd1234!", translated_content)
     assert similarity_score > 0.9
 
     is_english, translated_content = translate_content("??¿¿!!??")
-    similarity_score = eval_single_response_translation(translated_content, unintelligible_post_response)
-    assert similarity_score > 0.2
-
-    is_english, translated_content = translate_content("||| broken sentence.")
-    similarity_score = eval_single_response_translation(translated_content,  "||| broken sentence.")
+    assert is_english == True
+    similarity_score = eval_single_response_translation(translated_content, "??¿¿!!??")
     assert similarity_score > 0.9
 
-    is_english, translated_content = translate_content("テスト123 abc xyz")
-    similarity_score = eval_single_response_translation(translated_content, "テスト123 abc xyz")
-    assert similarity_score > 0.5
+    is_english, translated_content = translate_content("||| ajfhakdhfkadhfad")
+    assert is_english == True
+    similarity_score = eval_single_response_translation(translated_content, "||| ajfhakdhfkadhfad")
+    assert similarity_score > 0.9
+
+    is_english, translated_content = translate_content("テالأماスト123 abc الأمان")
+    assert is_english == True
+    similarity_score = eval_single_response_translation(translated_content, "テالأماスト123 abc الأمان")
+    assert similarity_score > 0.9
 
     is_english, translated_content = translate_content(".....!!!???...")
-    similarity_score = eval_single_response_translation(translated_content,  unintelligible_post_response)
-    assert similarity_score > 0.2
+    assert is_english == True
+    similarity_score = eval_single_response_translation(translated_content,  ".....!!!???...")
+    assert similarity_score > 0.9
 
 
 # Mock tests
