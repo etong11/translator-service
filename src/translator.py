@@ -19,13 +19,17 @@ client = AzureOpenAI(
 )
 
 GET_LANGUAGE_ERROR = "Error: Azure LLM call to get language failed."
-INVALID_LANGUAGE = "Error: Azure LLM call to get language returned an invalid language."
+INVALID_LANGUAGE_RESPONSE = "Error: Azure LLM call to get language returned an invalid response."
 TRANSLATE_ERROR = "Error: Azure LLM call to translate post failed."
 
-def get_language(post: str) -> str:
-    context = "You are a translator for a Q&A platform. Your job is to take in post content and determine what language it is. Only return this language."
+def get_translation(post: str) -> str:
+    context = """
+    You are a translator for a Q&A platform. Your job is to take in non-English post content and translate it into English. 
+    You will be given an input of content to translate and will return the English translation. 
+    If you are unable to determine an English translation, return the exact same text that you were given.
+    """
     response = client.chat.completions.create(
-    model="gpt-4o-mini",  # This should match your deployment name in Azure
+    model="gpt-4o-mini",
     messages=[
         {
           "role": "system",
@@ -40,8 +44,11 @@ def get_language(post: str) -> str:
     res = (response.choices[0].message.content)
     return res
 
-def get_translation(post: str) -> str:
-    context = "You are a translator for a Q&A platform. Your job is to take in non-English post content and translate it into English. You will be given an input of content to translate and will return the English translation."
+def get_language(post: str) -> str:
+    context = """
+    You are a translator for a Q&A platform. Your job is to take in post content and determine what language it is in. Only return this language in its English form.
+    If you are unable to recognize the language, only return "Unknown". If you think this post is written in English, return "English".
+    """
     response = client.chat.completions.create(
     model="gpt-4o-mini",
     messages=[
@@ -69,14 +76,16 @@ def translate_content(content: str) -> tuple[bool, str]:
 
   try:
     isEnglish = 'english' in post_lang.lower()  # Accounts for possible regional dialects
+    isUnknown = 'unknown' in post_lang.lower()
+    isResponseNotAlpha = not post_lang.isalpha()
   except Exception as e:
-    return (True, INVALID_LANGUAGE)
+    return (True, INVALID_LANGUAGE_RESPONSE)
 
-  if isEnglish:
-      result = (isEnglish, content)
+  if isEnglish or isUnknown:
+      result = (True, content)
+  elif isResponseNotAlpha:
+      result = (True, INVALID_LANGUAGE_RESPONSE)
   else:
-      if " " in post_lang:
-        return (True, INVALID_LANGUAGE)
       try:
         translation = get_translation(content)
         result = (isEnglish, translation)
